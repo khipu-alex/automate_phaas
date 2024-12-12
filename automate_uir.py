@@ -46,16 +46,20 @@ def style_sheet(sheet):
 
     for col in sheet.columns:
         max_length = 0
-        column = col[0].column_letter  # Get the column name
+        column = col[0].column_letter
+
+        title_length = len(str(col[0].value))
+
         for cell in col:
             try:
                 if len(str(cell.value)) > max_length:
-                    max_length = len(cell.value)
+                    max_length = len(str(cell.value))
             except:
                 pass
 
-    adjusted_width = max_length + 5
-    sheet.column_dimensions[column].width = adjusted_width
+        adjusted_width = max(max_length, title_length) + 3
+        sheet.column_dimensions[column].width = adjusted_width
+
 
     for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
         for cell in row:
@@ -140,8 +144,8 @@ def multi_campaign_info(writer):
             if 'succeeded' in df.columns:
                 total_submit += (df['succeeded'] == "Y").sum()
 
-        total_clicks_percent = (total_clicks / total_employees) * 100
-        total_submit_percent = (total_submit / total_employees) * 100 
+        total_clicks_percent = round((total_clicks / total_employees) * 100, 2)
+        total_submit_percent = round((total_submit / total_employees) * 100, 2) 
 
         # Create combined DataFrame for output
         combined_df = pd.DataFrame({
@@ -218,9 +222,9 @@ def pass_fail(writer):
         df = pd.DataFrame(percent_col)
 
         total_count = df.shape[0]
-        count_of_awareness_opened = (total_count / succeeded_count.shape[0]) * 100
+        count_of_awareness_opened = round((total_count / succeeded_count.shape[0]) * 100,2)
         over_75_count = (df[df[0] > 0.7].shape[0])
-        average = df[0].mean() * 100
+        average = round(df[0].mean() * 100, 2)
         not_passed_count = total_count - over_75_count
         
         awareness = pd.DataFrame({
@@ -310,8 +314,8 @@ def col_data(writer, excel_file, col):
         }).fillna(0).astype(int)
 
         combined_df['Total'] = combined_df.index.astype(str) + ' (' + combined_df['Total Employees'].astype(str) + ')'
-        combined_df['Clicked Percentage'] = (combined_df['Clicked'] / combined_df['Total Employees'].replace(0, np.nan)) * 100
-        combined_df['Submitted Percentage'] = (combined_df['Submitted'] / combined_df['Total Employees'].replace(0, np.nan)) * 100
+        combined_df['Clicked Percentage'] = round((combined_df['Clicked'] / combined_df['Total Employees'].replace(0, np.nan)) * 100, 2)
+        combined_df['Submitted Percentage'] = round((combined_df['Submitted'] / combined_df['Total Employees'].replace(0, np.nan)) * 100, 2)
 
         combined_df.reset_index(drop=False, inplace=True)
         combined_df.rename(columns={'index': f'{col[0].upper()}{col[1:]}'}, inplace=True)
@@ -324,6 +328,7 @@ def col_data(writer, excel_file, col):
             col_parts = col.split("_")
             new_name = " ".join([item.capitalize() for item in col_parts])
 
+            filtered_combined_df = filtered_combined_df[['Total', 'Clicked', 'Submitted', 'Clicked Percentage', 'Submitted Percentage']]
             filtered_combined_df.to_excel(writer, sheet_name=new_name, index=False) 
 
     except Exception as e:
