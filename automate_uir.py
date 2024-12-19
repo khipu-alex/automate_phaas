@@ -94,7 +94,7 @@ def write_to_new_sheet(writer):
     df = pd.read_excel(excel_file, sheet_name=sheet)
     df = df.drop(columns=columns_to_remove, errors='ignore')  
 
-    df['link'] = "https://[DOMAIN].khipuawareness.com/awareness/v/" + df['link'] + "/index.html"
+    df['link'] = "https://[DOMAIN].khipuawareness.[TOP LEVEL DOMAIN]/awareness/v/" + df['link'] + "/index.html"
 
     for i, col in enumerate(new_columns):
         if col not in df.columns:
