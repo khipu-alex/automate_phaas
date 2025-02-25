@@ -1,0 +1,42 @@
+rule test {
+
+  meta:
+    author = "Robbie Petrie"
+    description = "Triggers when a Microsoft Defender Alert occurs"
+    severity = "Low"
+    category = "Monitoring"
+
+  events:
+    $e.metadata.log_type = "MICROSOFT_GRAPH_ALERT"
+    $e.metadata.product_name = "Microsoft Defender ATP:MicrosoftDefenderATP"
+    //$e.security_result.alert_state = "ALERTING"
+    //not $e.security_result.detection_fields.value = "resolved"
+    //not $e.metadata.event_type = "SCAN_HOST"
+    $e.target.asset.hostname = $asset
+
+  match:
+    $asset over 10m
+
+  outcome:
+    $principal_hostname = array_distinct($e.principal.hostname)
+    $target_hostname = array_distinct($e.target.hostname)
+    $principal_process_command_line = array_distinct($e.principal.process.command_line)
+    $principal_process_file_sha256 = array_distinct($e.principal.process.file.sha256)
+    $principal_process_file_full_path = array_distinct($e.principal.process.file.full_path)
+    $principal_process_product_specfic_process_id = array_distinct($e.principal.process.product_specific_process_id)
+    $target_process_command_line = array_distinct($e.target.process.command_line)
+    $target_process_file_sha256 = array_distinct($e.target.process.file.sha256)
+    $target_process_file_full_path = array_distinct($e.target.process.file.full_path)
+    $target_file_full_path = array_distinct($e.target.file.full_path)
+    $principal_user_userid = array_distinct($e.principal.user.userid)
+    $target_resource_name = array_distinct($e.target.resource.name)
+    $target_user_userid = array_distinct($e.target.user.userid)
+    $principal_location = array_distinct($e.principal.ip_geo_artifact.location.country_or_region)
+    $principal_user_display_name = array_distinct($e.principal.user.user_display_name)
+    $target_user_display_name = array_distinct($e.target.user.user_display_name)
+    $principal_ip = array_distinct($e.principal.ip)
+    $target_ip = array_distinct($e.target.ip)
+
+  condition:
+    $e
+}
