@@ -1,0 +1,19 @@
+rule automate_rule_from_github_test {
+
+  meta:
+    author = "Bishal Chowdhury - KHIPU SOC"
+    description = "Detects potential Distributed Denial of Service (DDoS) or Denial of Service (DoS) attacks typically characterized by an abnormally high volume of requests in a short period"
+    severity = "High"
+    category = "Network"
+
+  events:
+    $e.metadata.product_name = "Web Application Firewall"
+    $e.metadata.log_type = "CLOUDFLARE"
+    $e.principal.ip = $src_ip
+
+  match:
+    $src_ip over 1m
+
+  condition:
+    #e > 60000
+}
