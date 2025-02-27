@@ -1,0 +1,7 @@
+automate_rule_from_github_test:
+  alerting: false
+  archive_time: null
+  archived: false
+  enabled: true
+  run_frequency: LIVE
+  type: SINGLE_EVENT
