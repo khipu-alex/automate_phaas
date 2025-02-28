@@ -1,4 +1,4 @@
-automate_rule_from_github_test:
+automate_rule_from_github_test_with_ollie:
   alerting: false
   archive_time: null
   archived: false
